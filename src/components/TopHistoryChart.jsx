@@ -105,24 +105,7 @@ const TopHistoryChart = ({ data, selectedCategories, categoriesList }) => {
   );
 
   useEffect(() => {
-    // Инициализация видимых линий
-    const newVisibleLines = { ...visibleLines };
-    let hasNewLines = false;
-
-    chartData.datasets.forEach(({ label }) => {
-      if (!(label in newVisibleLines)) {
-        newVisibleLines[label] = true;
-        hasNewLines = true;
-      }
-    });
-
-    if (hasNewLines) {
-      setVisibleLines(newVisibleLines);
-    }
-  }, [chartData.datasets, visibleLines]);
-
-  useEffect(() => {
-    if (!data || !chartData.labels.length) return;
+    if (!data || !chartData.labels.length || !canvasRef.current) return;
 
     const filteredDatasets = chartData.datasets.filter(
       ({ label }) => visibleLines[label] !== false
@@ -154,20 +137,21 @@ const TopHistoryChart = ({ data, selectedCategories, categoriesList }) => {
   if (!data || typeof data !== 'object') {
     return <div>No data available</div>;
   }
-
-    if (!chartData.datasets.length) {
+  if (!chartData.datasets.length) {
     return <div style={{ textAlign: 'center', color: '#888' }}>
-      No data for the selected country or categorys
+      No data for the selected country or category
     </div>;
   }
 
   return (
     <>
-      <canvas 
-        ref={canvasRef} 
-        style={{ maxWidth: '100%', height: '300px', padding: '30px' }} 
-        aria-label="Top chart history"
-      />
+      <div className='top-history-canvas-container'>
+        <canvas 
+          ref={canvasRef} 
+          style={{ maxWidth: '100%', height: '300px', padding: '30px' }} 
+          aria-label="Top chart history"
+        />
+      </div>
       <ChartLegend 
         datasets={chartData.datasets}
         visibleLines={visibleLines}
